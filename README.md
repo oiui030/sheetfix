@@ -21,3 +21,14 @@ Sites managed Git is the production deployment source. GitHub Actions automatic 
 
 ## Limitations
 Multi CSV/XLSX upload, mapping, merging, deduplication, date/currency normalization, preview and explicit approval before XLSX export. No formula evaluation, exchange-rate conversion, OCR or automatic decimal-locale detection. Invalid conversions preserve source values and appear in review issues. Settings changes invalidate approval. Max 10MB/file, total 50k rows, 15 sheets and 100 columns.
+
+## Usability update
+- Stable editor layout and mobile file/result/settings tabs.
+- The next action stays visible at the bottom of the workspace.
+- File removal, replacement and reset can be undone without clearing original files.
+- Sign-in preserves the in-progress workspace in session storage for a 30-minute restoration window.
+- Help and saved history are collapsed instead of occupying the core work area.
+SheetFix keeps duplicates by default, uses one format selector per column, shows original sheets independently, highlights changed/invalid cells and links review issues to their output rows. Small/single-column CSV and Excel date systems are supported. Mixed-currency columns keep source values for review.
+
+## Reference UI update
+Neutral charcoal workspace with a narrow icon rail, segmented navigation, separate file/result/property panels, dark cards, inset corner actions on selectable metrics, pill progress stages, and a dotted empty canvas. Diffly uses lavender; SheetFix uses mint. Panel shortcuts are keyboard accessible and switch to a single-panel layout on smaller screens. No third-party logos or brand assets are copied.
