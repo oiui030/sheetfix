@@ -1,0 +1,1 @@
+import {getChatGPTUser} from "./chatgpt-auth";import Editor from "./editor";export const dynamic="force-dynamic";export default async function Page(){const user=await getChatGPTUser();return <Editor signedIn={!!user} />}

@@ -1,0 +1,13 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';import * as XLSX from 'xlsx';import {readFile,parseDate,parseMoney,transform,exportWorkbook} from './app/engine.ts';
+import type {Source,Settings} from './app/engine.ts';
+const config:Settings={dedup:true,keys:['ID'],keep:'first',dateColumns:['날짜'],dateFormat:'ISO',moneyColumns:['금액']};
+const a:Source={id:'a',name:'a.csv',sheet:'CSV',headers:['id','date','amount'],mapping:['ID','날짜','금액'],rows:[['001','2026-10-01','₩12,000'],['002','03/04/2026','($1,500.50)']]};
+const b:Source={...a,id:'b',name:'b.csv',rows:[['001','2026-10-02','USD 20'],['003','2026-02-30','bad']]};
+test('merge mapping dedup and ambiguous date',()=>{const r=transform([a,b],config);assert.equal(r.inputCount,4);assert.equal(r.rows.length,3);assert.equal(r.removed,1);assert.equal(r.rows[0]['금액'],12000);assert.equal(r.rows[1]['금액'],-1500.5);assert.equal(r.rows[1]['날짜'],'03/04/2026');assert.equal(r.issues.length,3)});
+test('keep last',()=>{const r=transform([a,b],{...config,keep:'last'});assert.equal(r.rows.find(r=>r.ID==='001')?.['금액'],20)});
+test('date validity and explicit locale',()=>{assert.equal(parseDate('03/04/2026','ISO'),null);assert.equal(parseDate('03/04/2026','DMY'),'2026-04-03');assert.equal(parseDate('03/04/2026','MDY'),'2026-03-04');assert.equal(parseDate('2026-02-29','ISO'),null);assert.equal(parseDate('2028-02-29','ISO'),'2028-02-29')});
+test('currency format invalid rejected',()=>{assert.equal(parseMoney('€1,234.56'),1234.56);assert.equal(parseMoney('1.234,56'),null);assert.equal(parseMoney('12,34'),null);assert.equal(parseMoney('hello'),null)});
+test('CSV quoting Unicode multiline IDs',async()=>{const [s]=await readFile(new File(['\uFEFFid,name\r\n001,"김,서연"\r\n002,"줄1\n줄2"'],'test.csv'));assert.equal(s.rows[0][0],'001');assert.equal(s.rows[0][1],'김,서연');assert.equal(s.rows[1][1],'줄1\n줄2')});
+test('XLSX round trip preserves text and blocks formulas',()=>{const source={...a,rows:[['001','2026-10-01','=HYPERLINK("bad")']]};const r=transform([source],{...config,moneyColumns:[]});const book=XLSX.read(exportWorkbook(r,config),{type:'array'});const ws=book.Sheets['정리 결과'];assert.equal(ws.A2.v,'001');assert.equal(ws.A2.t,'s');assert.equal(ws.C2.v,'=HYPERLINK("bad")');assert.equal(ws.C2.t,'s');assert.equal(ws.C2.f,undefined)});
+test('mapping conflicts and missing dedup key rejected',()=>{assert.throws(()=>transform([{...a,mapping:['ID','ID','금액']}],config),/같은 출력 열/);assert.throws(()=>transform([a],{...config,keys:[]}),/중복 판단/)});
+test('blank keys do not erase unrelated rows',()=>{const r=transform([{...a,rows:[['','2026-01-01',1],['','2026-01-02',2]]}],config);assert.equal(r.rows.length,2)});

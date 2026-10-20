@@ -1,0 +1,1 @@
+import {sqliteTable,text,index} from "drizzle-orm/sqlite-core";export const projects=sqliteTable("projects",{id:text("id").primaryKey(),owner:text("owner").notNull(),title:text("title").notNull(),objectKey:text("object_key").notNull(),createdAt:text("created_at").notNull()},t=>[index("projects_owner_idx").on(t.owner)]);

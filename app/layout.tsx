@@ -1,0 +1,1 @@
+import type {Metadata} from "next";import "./globals.css";export const metadata:Metadata={title:"SheetFix — 작업 공간",description:"파일을 안전하고 명확하게 처리하는 전문가용 작업 공간"};export default function RootLayout({children}:{children:React.ReactNode}){return <html lang="ko"><body>{children}</body></html>}
