@@ -10,7 +10,11 @@
     "dev": "node scripts/run-framework.mjs dev",
     "build": "node scripts/run-framework.mjs build",
     "start": "node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js dev --config dist/server/wrangler.json --local --persist-to .wrangler/state --ip 127.0.0.1 --inspector-port 0",
-    "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
+    "lint": "eslint . --ignore-pattern dist --ignore-pattern dist-static --ignore-pattern .next",
+    "test": "node --experimental-strip-types --test engine.test.ts",
+    "typecheck": "tsc --noEmit",
+    "build:static": "vite build --config vite.static.config.ts",
+    "preview:static": "vite preview --config vite.static.config.ts --host 0.0.0.0 --port 4173 --strictPort",
     "db:generate": "drizzle-kit generate"
   },
   "dependencies": {

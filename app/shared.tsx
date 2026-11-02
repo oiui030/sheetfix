@@ -24,13 +24,13 @@ export function MobilePanes({pane, onChange, resultLabel = "결과", toolLabel =
   return <><nav className="workspace-rail" aria-label="빠른 작업 영역">{items.map(([value,label,Icon]) => <button key={value} aria-label={label} title={label} aria-pressed={pane === value} onClick={() => select(value)}><Icon size={19}/></button>)}</nav><nav className="mobile-panes" aria-label="작업 영역">{items.map(([value,label]) => <button key={value} aria-pressed={pane === value} onClick={() => select(value)}>{label}</button>)}</nav></>;
 
 }
-export function Header({name, signedIn, children, onAuth}: {name: string; signedIn: boolean; children?: ReactNode; onAuth?: (e: React.MouseEvent<HTMLAnchorElement>) => void}) {
-  return <header className="app-header"><a className="skip-link" href="#workspace-main">작업 영역으로 건너뛰기</a><div className="brand"><span className="brand-mark">{name[0]}</span>{name}</div><span className="workspace-label">작업 공간</span><span className="header-spacer"/>{children}<a className="auth-link" onClick={onAuth} target="_top" href={signedIn ? "/signout-with-chatgpt?return_to=/" : "/signin-with-chatgpt?return_to=/"}><LogIn size={15}/><span>{signedIn ? "로그아웃" : "로그인"}</span></a></header>;
+export function Header({name, signedIn, children, onAuth, showAuth = true}: {name: string; signedIn: boolean; children?: ReactNode; onAuth?: (e: React.MouseEvent<HTMLAnchorElement>) => void; showAuth?: boolean}) {
+  return <header className="app-header"><a className="skip-link" href="#workspace-main">작업 영역으로 건너뛰기</a><div className="brand"><span className="brand-mark">{name[0]}</span>{name}</div><span className="workspace-label">작업 공간</span><span className="header-spacer"/>{children}{showAuth && <a className="auth-link" onClick={onAuth} target="_top" href={signedIn ? "/signout-with-chatgpt?return_to=/" : "/signin-with-chatgpt?return_to=/"}><LogIn size={15}/><span>{signedIn ? "로그아웃" : "로그인"}</span></a>}</header>;
 }
 export function Steps({labels, current}: {labels: string[]; current: number}) {
   return <ol className="steps" aria-label="작업 진행">{labels.map((label, i) => <li key={label} className={i < current ? "done" : i === current ? "current" : ""} aria-current={i === current ? "step" : undefined}><span>{i < current ? <Check size={12}/> : i + 1}</span>{label}</li>)}</ol>;
 }
-export function Footer({text}: {text: string}) { return <footer className="app-footer"><span className="status-dot"/>{text}<span className="header-spacer"/><span><ShieldCheck size={12}/>파일 처리는 이 기기에서 · 클라우드 저장은 선택</span></footer>; }
+export function Footer({text, cloud = true}: {text: string; cloud?: boolean}) { return <footer className="app-footer"><span className="status-dot"/>{text}<span className="header-spacer"/><span><ShieldCheck size={12}/>{cloud ? '파일 처리는 이 기기에서 · 클라우드 저장은 선택' : '파일은 이 브라우저 안에서만 처리됩니다'}</span></footer>; }
 export function UploadBox({id, title, detail, fileName, disabled, accept, multiple, onFiles, onRemove}: {id: string; title: string; detail: string; fileName?: string; disabled?: boolean; accept: string; multiple?: boolean; onFiles: (files: File[]) => void; onRemove?: () => void}) {
   const input = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
